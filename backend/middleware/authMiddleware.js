@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const authMiddleware = (req, res, next) => {
   // Retrieve token from authorization header (Bearer token)
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];  // Format should be "Bearer <token>"
+  const token = authHeader && authHeader.split(' ')[1];
 
   // If token is not provided
   if (!token) {
@@ -16,7 +16,7 @@ const authMiddleware = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Attach the decoded user data to the request object
-    req.user = decoded.user;
+    req.user = decoded.user;  // You can access the user data via req.user in your route handlers
     next();  // Continue to the next middleware or route handler
   } catch (err) {
     // Token verification failed

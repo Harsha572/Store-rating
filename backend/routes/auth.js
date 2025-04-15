@@ -39,11 +39,13 @@ router.post('/register', async (req, res) => {
 // @route   POST /api/auth/login
 // @desc    Login user and return JWT token
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required' });
+  if (!email || !password || !role) {
+    return res.status(400).json({ message: 'Email, password, and role are required' });
   }
+
+  const normalizedRole = role.trim().toLowerCase();
 
   try {
     const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -51,6 +53,14 @@ router.post('/login', async (req, res) => {
 
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // DEBUG: Log roles
+    console.log('DB Role:', user.role, '| Incoming Role:', normalizedRole);
+
+    // Compare role (case-insensitive and trimmed)
+    if (user.role.trim().toLowerCase() !== normalizedRole) {
+      return res.status(403).json({ message: `Access denied: not a ${role}` });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

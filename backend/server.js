@@ -18,6 +18,12 @@ app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
+const storeRoutes = require('./routes/store');
+app.use('/api/stores', storeRoutes);
+
+const ratingsRoutes = require('./routes/ratings');
+app.use('/api/ratings', authenticateToken, ratingsRoutes); // Ratings route with authentication
+
 // Protected test route
 app.get('/api/protected', authenticateToken, (req, res) => {
   res.json({
